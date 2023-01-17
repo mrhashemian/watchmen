@@ -55,7 +55,7 @@ func (r *userRepository) CellphoneExists(ctx context.Context, cellphone string) 
 	defer done()
 
 	var exists bool
-	err := r.baseAPIDB.GetContext(ctx, &exists, "SELECT EXISTS (Select id FROM passengers WHERE cellphone = ?) AS `exists`;", cellphone)
+	err := r.baseAPIDB.GetContext(ctx, &exists, "SELECT EXISTS (Select id FROM users WHERE cellphone = ?) AS `exists`;", cellphone)
 	if err != nil {
 		return true, err
 	}
@@ -68,7 +68,7 @@ func (r *userRepository) EmailExists(ctx context.Context, email string) (bool, e
 	defer done()
 
 	var exists bool
-	err := r.baseAPIDB.GetContext(ctx, &exists, "SELECT EXISTS (Select id FROM passengers WHERE email = ?) AS `exists`;", email)
+	err := r.baseAPIDB.GetContext(ctx, &exists, "SELECT EXISTS (Select id FROM users WHERE email = ?) AS `exists`;", email)
 	if err != nil {
 		return true, err
 	}
@@ -80,7 +80,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user *User) error {
 	ctx, done := context.WithTimeout(ctx, config.C.BaseAPIDatabase.WriteTimeout)
 	defer done()
 
-	result, err := r.baseAPIDB.NamedExecContext(ctx, "INSERT INTO user(email, password, fullname, cellphone, created_at, updated_at) VALUES (:email, :password, :fullname, :cellphone, NOW(), NOW())",
+	result, err := r.baseAPIDB.NamedExecContext(ctx, "INSERT INTO users(email, password, fullname, cellphone, created_at, updated_at) VALUES (:email, :password, :fullname, :cellphone, NOW(), NOW())",
 		user)
 	if err != nil {
 		return err

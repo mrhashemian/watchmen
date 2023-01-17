@@ -16,7 +16,6 @@ services:
       - .compose/config.yml:/app/config.yml
     depends_on:
       - base-api-db
-      - cache
     restart: on-failure
     command: >
       bash -c "./watchmen --config config.yml database migrate && \

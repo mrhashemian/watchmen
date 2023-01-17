@@ -47,7 +47,7 @@ func SignUp(userRepo repository.UserRepository) func(ctx echo.Context) error {
 
 		exists, err := userRepo.CellphoneExists(ctx.Request().Context(), body.Cellphone)
 		if err != nil {
-			return fmt.Errorf("PassengerSignupFailure: %w", err)
+			return fmt.Errorf("SignUp.CellphoneExists: %w", err)
 		} else if exists {
 			return ctx.JSON(http.StatusBadRequest, api.Response{
 				Status: http.StatusBadRequest,
@@ -59,7 +59,7 @@ func SignUp(userRepo repository.UserRepository) func(ctx echo.Context) error {
 
 		exists, err = userRepo.EmailExists(ctx.Request().Context(), body.Email)
 		if err != nil {
-			return fmt.Errorf("PassengerSignupFailure: %w", err)
+			return fmt.Errorf("SignUp.EmailExists: %w", err)
 		} else if exists {
 			return ctx.JSON(http.StatusBadRequest, api.Response{
 				Status: http.StatusBadRequest,
@@ -87,7 +87,7 @@ func SignUp(userRepo repository.UserRepository) func(ctx echo.Context) error {
 
 		err = userRepo.CreateUser(ctx.Request().Context(), user)
 		if err != nil {
-			return fmt.Errorf("PassengerSignupFailure: %w", err)
+			return fmt.Errorf("SignUp.CreateUser: %w", err)
 		}
 
 		return ctx.JSON(http.StatusOK, api.Response{
