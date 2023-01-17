@@ -1,0 +1,42 @@
+version: '3'
+services:
+  app:
+    build: .
+    image: watchmen:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - WATCHMEN_REDIS_ADDRESS=cache:6379
+      - WATCHMEN_BASE_API_DATABASE_HOST=base-api-db
+      - WATCHMEN_BASE_API_DATABASE_USER=root
+      - WATCHMEN_BASE_API_DATABASE_PASSWORD=root-secure-password
+      - WATCHMEN_BASE_API_DATABASE_PORT=3306
+      - WATCHMEN_SERVER_ADDRESS=0.0.0.0:8080
+    volumes:
+      - .compose/config.yml:/app/config.yml
+    depends_on:
+      - base-api-db
+      - cache
+    restart: on-failure
+    command: >
+      bash -c "./watchmen --config config.yml database migrate && \
+               ./watchmen --config config.yml database seed && \
+               ./watchmen --config config.yml serve"
+
+  base-api-db:
+    image: mariadb:latest
+    container_name: base-api-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root-secure-password
+      MYSQL_USER: watchmen
+      MYSQL_PASSWORD: watchmen
+      MYSQL_DATABASE: base-api
+    volumes:
+      - base-api-db-data:/var/lib/mysql
+
+volumes:
+  base-api-db-data:
+    driver: local
+

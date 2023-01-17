@@ -1,0 +1,25 @@
+server:
+  address: localhost:8080
+  location: 'Asia/Tehran'
+logger:
+  level: info
+  tag: watchmen
+base_api_database:
+  driver: mysql
+  host: localhost
+  port: 3306
+  db: base-api
+  user: watchmen
+  password: watchmen
+  location: 'Asia/Tehran'
+  max_conn: 10
+  idle_conn: 5
+  timeout: 10s
+  dial_retry: 12
+  dial_timeout: 5s
+  read_timeout: 2s
+  write_timeout: 2s
+  update_timeout: 2s
+  delete_timeout: 2s
+passenger:
+  password_hash_cost: 10
