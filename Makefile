@@ -10,7 +10,7 @@ DC_FILE="docker-compose.yml"
 DC_RESOURCE_DIR=".compose"
 CURRENT_TIMESTAMP := $(shell date +%s)
 
-all: format build-static-vendor
+all: format lint build-static-vendor
 
 set-goproxy:
 	go env -w GOPROXY=direct
