@@ -36,6 +36,8 @@ func migrateBaseAPIDB() {
 
 	drop := `
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS links;
+DROP TABLE IF EXISTS link_report;
 `
 	_, err := db.MustExec(drop).RowsAffected()
 	if err != nil {
@@ -51,6 +53,25 @@ CREATE TABLE users (
   cellphone varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   updated_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE links (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  user_id int(10) unsigned NOT NULL,
+  error_threshold int(10) unsigned NOT NULL DEFAULT 12,
+  url varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  method varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'GET',
+  created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  updated_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE link_report (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  link_id int(10) unsigned NOT NULL,
+  status bool NOT NULL,
+  created_at timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (id)
 );
 `

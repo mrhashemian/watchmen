@@ -1,6 +1,7 @@
 server:
   address: localhost:8080
   location: 'Asia/Tehran'
+  worker_duration: 5s
 logger:
   level: info
   tag: watchmen
@@ -23,3 +24,6 @@ base_api_database:
   delete_timeout: 2s
 user:
   password_hash_cost: 10
+  jwt_secret: '4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*'
+link:
+  error_threshold: 12

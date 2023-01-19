@@ -21,11 +21,13 @@ type Config struct {
 	Logger          Logger      `yaml:"logger"`
 	BaseAPIDatabase SQLDatabase `yaml:"base_api_database"`
 	User            User        `yaml:"user"`
+	Link            Link        `yaml:"link"`
 }
 
 type Server struct {
-	Address  string         `yaml:"address"`
-	Location *time.Location `yaml:"location"`
+	Address        string         `yaml:"address"`
+	Location       *time.Location `yaml:"location"`
+	WorkerDuration time.Duration  `yaml:"worker_duration"`
 }
 
 type Logger struct {
@@ -56,11 +58,12 @@ type SQLDatabase struct {
 // User config struct
 type User struct {
 	PasswordHashCost int `yaml:"password_hash_cost"`
+	JWTSecret        []byte
+	JWTByteSecret    string `yaml:"jwt_secret"`
 }
 
-type OTP struct {
-	Len int           `yaml:"len"`
-	TTL time.Duration `yaml:"ttl"`
+type Link struct {
+	ErrorThreshold uint `yaml:"error_threshold"`
 }
 
 // String representation of config struct
@@ -120,6 +123,8 @@ func Init(filename string) *Config {
 	if err != nil {
 		failFunc("failed on config unmarshal: %v", filename, err)
 	}
+
+	c.User.JWTSecret = []byte(c.User.JWTByteSecret)
 
 	C = c
 

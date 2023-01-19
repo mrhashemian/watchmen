@@ -3,23 +3,16 @@ package utils
 import (
 	"errors"
 	"regexp"
-	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var (
 	cellphonePattern *regexp.Regexp
-	emailPattern     *regexp.Regexp
+	passwordPattern  *regexp.Regexp
 )
 
 func init() {
-	var err error
-	emailPattern = regexp.MustCompile(`(^[a-zA-Z0-9.!#$%&'*+=?^_{|}~-]{3,64})@([a-zA-Z0-9.\-]{2,186})\.([a-zA-Z]{2,4})$`)
-	cellphonePattern, err = regexp.Compile(`^\d{10}$`)
-	if err != nil {
-		log.Fatal("cannot compile cellphone regex")
-	}
+	cellphonePattern = regexp.MustCompile(`^\d{10}$`)
+	passwordPattern = regexp.MustCompile(`^[a-zA-Z0-9]{8,}$`)
 }
 
 func NormalizeCellphone(cellphone string) (string, error) {
@@ -52,15 +45,11 @@ func NormalizeCellphone(cellphone string) (string, error) {
 	return cellphone, nil
 }
 
-func NormalizeEmail(email string) (string, error) {
-	matched := emailPattern.MatchString(email)
+func ValidatePassword(password string) error {
+	matched := passwordPattern.MatchString(password)
 	if !matched {
-		return "", errors.New("not a valid email")
+		return errors.New("password: minimum eight characters of letter and numbers")
 	}
 
-	parts := strings.Split(email, "@")
-	parts[0] = strings.ToLower(parts[0])
-	parts[1] = strings.ToLower(parts[1])
-
-	return strings.Join(parts, "@"), nil
+	return nil
 }

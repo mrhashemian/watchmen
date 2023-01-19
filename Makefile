@@ -53,7 +53,6 @@ check-golint:
 lint: check-golint
 	find $(ROOT) -type f -name "*.go" -not -path "$(ROOT)/vendor/*" | xargs -n 1 -I R golint -set_exit_status R
 
-
 ############################################################
 # Development Environment
 ############################################################

@@ -15,6 +15,8 @@ type UserRepository interface {
 	CellphoneExists(ctx context.Context, cellphone string) (bool, error)
 	EmailExists(ctx context.Context, email string) (bool, error)
 	CreateUser(ctx context.Context, user *User) error
+	FindByEmail(ctx context.Context, email string) (*User, error)
+	GetAlerts(ctx context.Context, userID uint) ([]*Link, error)
 }
 
 // User is a model in base API database
@@ -37,6 +39,12 @@ func (u *User) SetPassword(password string) error {
 	u.Password = string(hashed)
 
 	return nil
+}
+
+func (u *User) ValidatePassword(password string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+
+	return err
 }
 
 type userRepository struct {
@@ -101,4 +109,37 @@ func (r *userRepository) CreateUser(ctx context.Context, user *User) error {
 	user.ID = uint(id)
 
 	return nil
+}
+
+func (r *userRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
+	p := new(User)
+	ctx, done := context.WithTimeout(ctx, config.C.BaseAPIDatabase.ReadTimeout)
+	defer done()
+
+	err := r.baseAPIDB.GetContext(ctx, p, "SELECT * FROM users WHERE email = ?;", email)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+func (r *userRepository) GetAlerts(ctx context.Context, userID uint) ([]*Link, error) {
+	var p []*Link
+	ctx, done := context.WithTimeout(ctx, config.C.BaseAPIDatabase.ReadTimeout)
+	defer done()
+
+	err := r.baseAPIDB.SelectContext(ctx, &p, "WITH cte AS (SELECT l.id id, count(*) c FROM links l "+
+		"JOIN link_report lr ON lr.link_id = l.id "+
+		"WHERE l.user_id = ? "+
+		"AND lr.status = FALSE "+
+		"GROUP BY l.id) "+
+		"SELECT l.* FROM links l "+
+		"JOIN cte ON l.id = cte.id "+
+		"AND cte.c >= l.error_threshold", userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }

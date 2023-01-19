@@ -8,7 +8,9 @@ import (
 	"syscall"
 	"time"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	logging "watchmen/log"
@@ -16,6 +18,7 @@ import (
 	"watchmen/config"
 	"watchmen/controller"
 	"watchmen/database"
+	"watchmen/monitor"
 	"watchmen/repository"
 )
 
@@ -32,9 +35,18 @@ func serve() {
 	defer database.CloseDB(baseAPIDB)
 
 	userRepo := repository.NewUserRepository(baseAPIDB)
+	linkRepo := repository.NewLinkRepository(baseAPIDB)
+
+	mnt := monitor.NewMonitor(linkRepo, 10*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() {
+		monitor.Run(ctx, mnt, config.C.Server.WorkerDuration)
+	}()
 
 	e := echo.New()
 	e.Use(logging.EchoMiddleware())
+	e.Use(middleware.Recover())
 
 	e.GET("/", indexHandler)
 
@@ -42,6 +54,13 @@ func serve() {
 	v1Users := v1.Group("/users")
 
 	v1Users.POST("/sign-up", controller.SignUp(userRepo))
+	v1Users.POST("/login", controller.Login(userRepo))
+	v1Users.GET("/:id/alert", controller.GetAlert(userRepo), echojwt.JWT(config.C.User.JWTSecret))
+
+	v1Links := v1Users.Group("/:id/links", echojwt.JWT(config.C.User.JWTSecret))
+	v1Links.POST("", controller.AddLink(linkRepo))
+	v1Links.GET("", controller.GetLink(linkRepo))
+	v1Links.GET("/:link_id", controller.RetrieveLink(linkRepo))
 
 	go func() {
 		if err := e.Start(config.C.Server.Address); err != nil {
@@ -57,7 +76,7 @@ func serve() {
 		syscall.SIGINT)
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
 		log.Fatalf("error in shutdown: %v", err)

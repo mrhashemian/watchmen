@@ -1,6 +1,5 @@
 # watchmen
 
-
 ## Build & Run
 
 ### Manual Build and Run
@@ -16,7 +15,6 @@ Golang 1.16 is required for building the project.
     ```bash
     ./watchmen serve --config config.yml
     ```
-
 
 ### Docker using Makefile
 
@@ -34,9 +32,11 @@ You can build and run the project with docker compose. [Docker](https://docs.doc
     ```
 
 ## Development Notes
+
 Before starting development on this project it's better to consider these notes:
 
 ### Makefile Rules
+
 ```bash
 make                    # Format, lint and static build
 make build              # Build the project
@@ -47,3 +47,10 @@ make up                 # Prepare and run the project with docker compose
 make down               # Shut down the project running in the docker compose
 ```
 
+### Database
+
+you can find about database in cmd->migrate.go
+
+### Endpoints
+
+check postman collection

@@ -23,7 +23,7 @@ var (
 
 var rootCMD = &cobra.Command{
 	Use:   "watchmen",
-	Short: "watchmen service",
+	Short: "watchmen monitor",
 }
 
 var (
