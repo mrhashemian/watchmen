@@ -21,8 +21,7 @@ func init() {
 	validate = validator.New()
 
 	allowedMethods = map[string]struct{}{
-		http.MethodPost: {},
-		http.MethodGet:  {},
+		http.MethodGet: {},
 	}
 }
 
