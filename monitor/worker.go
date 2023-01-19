@@ -7,13 +7,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Run creates a ticker to execute mnt.Run() every d duration
+// Run creates a ticker to execute mnt.CheckLinkHealth() every d duration
 func Run(ctx context.Context, mnt Monitor, d time.Duration) {
 	ticker := time.NewTicker(d)
 	for {
 		select {
 		case <-ticker.C:
-			err := mnt.Run(ctx)
+			err := mnt.CheckLinkHealth(ctx)
 			if err != nil {
 				log.Error(err)
 			}

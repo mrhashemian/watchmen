@@ -9,7 +9,7 @@ import (
 )
 
 type Monitor interface {
-	Run(ctx context.Context) error
+	CheckLinkHealth(ctx context.Context) error
 }
 
 type monitor struct {
@@ -26,7 +26,7 @@ func NewMonitor(linkRepo repository.LinkRepository, timeout time.Duration) Monit
 	return mnt
 }
 
-func (mnt *monitor) Run(ctx context.Context) error {
+func (mnt *monitor) CheckLinkHealth(ctx context.Context) error {
 	links, err := mnt.linkRepo.GetAllLinks(ctx)
 	if err != nil {
 		return err
