@@ -13,11 +13,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	logging "watchmen/log"
 
 	"watchmen/config"
 	"watchmen/controller"
 	"watchmen/database"
+	logging "watchmen/log"
 	"watchmen/monitor"
 	"watchmen/repository"
 )

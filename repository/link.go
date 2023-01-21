@@ -38,6 +38,7 @@ type LinkReport struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
+// LinkReportStatus is for check status of links
 type LinkReportStatus struct {
 	OK  int `db:"ok"`
 	ERR int `db:"error"`
@@ -129,7 +130,7 @@ func (r *linkRepository) RetrieveLinkData(ctx context.Context, userID, linkID ui
 		"COUNT(case lr.status when FALSE then 1 else null end) AS error FROM link_report lr "+
 		"JOIN links l ON lr.link_id = l.id "+
 		"WHERE l.user_id = ? "+
-		"AND l.id = ? AND lr.created_at = CURDATE()", userID, linkID)
+		"AND l.id = ? AND DATE(lr.created_at) = CURDATE()", userID, linkID)
 	if err != nil {
 		return status, err
 	}

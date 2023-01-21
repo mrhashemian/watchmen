@@ -1,7 +1,7 @@
 server:
   address: localhost:8080
   location: 'Asia/Tehran'
-  worker_duration: 5s
+  worker_duration: 10s
 logger:
   level: info
   tag: watchmen

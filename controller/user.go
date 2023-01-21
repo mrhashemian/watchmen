@@ -190,6 +190,7 @@ type GetAlertBody struct {
 	UserID uint `param:"id"`
 }
 
+// GetAlert return all links of a user, that error count of them greater than or equal to link threshold
 func GetAlert(userRepo repository.UserRepository) func(ctx echo.Context) error {
 	return func(ctx echo.Context) error {
 		body := new(GetAlertBody)

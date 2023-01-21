@@ -136,6 +136,7 @@ type RetrieveLinkBody struct {
 	LinkID uint `param:"link_id"`
 }
 
+// RetrieveLink used for check link status. counting successful and unsuccessful requests
 func RetrieveLink(linkRepo repository.LinkRepository) func(ctx echo.Context) error {
 	return func(ctx echo.Context) error {
 		body := new(RetrieveLinkBody)
@@ -163,7 +164,10 @@ func RetrieveLink(linkRepo repository.LinkRepository) func(ctx echo.Context) err
 
 		return ctx.JSON(http.StatusOK, api.Response{
 			Status: http.StatusOK,
-			Data:   fmt.Sprintf("ok: %d\nerr: %d", status.OK, status.ERR),
+			Data: echo.Map{
+				"ok count":    status.OK,
+				"error count": status.ERR,
+			},
 		})
 	}
 }
